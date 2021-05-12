@@ -97,17 +97,16 @@ namespace CSV_to_XML
         {
             string blobId = $"xml/{xmlFileName}";
             BlobClient blobClient = GetContainer(log).GetBlobClient(blobId);
-            if (!blobClient.Exists())
+            if (blobClient.Exists())
             {
-                stream.Position = 0;
-                BlobContentInfo info = blobClient.Upload(stream);
+                log.LogInformation("Deleting existing file and will generate new one.");
+                blobClient.Delete();
+            }
 
-                log.LogInformation("XML created.");
-            }
-            else
-            {
-                log.LogInformation("A file with same name already exist.");
-            }
+            stream.Position = 0;
+            BlobContentInfo info = blobClient.Upload(stream);
+
+            log.LogInformation("XML created.");
         }
 
         /// <summary>
